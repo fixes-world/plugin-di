@@ -1,3 +1,5 @@
+# Unmaintained: this plugin needs a maintainer.
+
 # @elizaos/plugin-di - Dependency Injection Plugin for Eliza
 
 This plugin provides a dependency injection system for Eliza plugins.
