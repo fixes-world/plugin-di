@@ -1,9 +1,18 @@
 var __defProp = Object.defineProperty;
-var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
 };
+var __decorateClass = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc(target, key) : target;
+  for (var i = decorators.length - 1, decorator; i >= 0; i--)
+    if (decorator = decorators[i])
+      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
+  if (kind && result) __defProp(target, key, result);
+  return result;
+};
+var __decorateParam = (index, decorator) => (target, key) => decorator(target, key, index);
 
 // src/symbols.ts
 var symbols_exports = {};
@@ -25,42 +34,46 @@ function property(config) {
     Reflect.defineMetadata(CONTENT_METADATA_KEY, properties, target);
   };
 }
-__name(property, "property");
 function createZodSchema(cls) {
   const properties = Reflect.getMetadata(CONTENT_METADATA_KEY, cls.prototype) || {};
-  const schemaProperties = Object.entries(properties).reduce((acc, [key, { schema }]) => {
-    acc[key] = schema;
-    return acc;
-  }, {});
+  const schemaProperties = Object.entries(properties).reduce(
+    (acc, [key, { schema }]) => {
+      acc[key] = schema;
+      return acc;
+    },
+    {}
+  );
   return z.object(schemaProperties);
 }
-__name(createZodSchema, "createZodSchema");
 function loadPropertyDescriptions(cls) {
   const properties = Reflect.getMetadata(CONTENT_METADATA_KEY, cls.prototype) || {};
-  return Object.entries(properties).reduce((acc, [key, { description, examples }]) => {
-    acc[key] = {
-      description,
-      examples
-    };
-    return acc;
-  }, {});
+  return Object.entries(properties).reduce(
+    (acc, [key, { description, examples }]) => {
+      acc[key] = { description, examples };
+      return acc;
+    },
+    {}
+  );
 }
-__name(loadPropertyDescriptions, "loadPropertyDescriptions");
 
 // src/factories/plugin.ts
-import { elizaLogger } from "@elizaos/core";
+import {
+  elizaLogger
+} from "@elizaos/core";
 async function getInstanceFromContainer(ctx, item, type) {
   if (typeof item === "function") {
     try {
       return await ctx.container.getAsync(item);
     } catch (e) {
-      elizaLogger.error(`Error normalizing ${type}: ${item.name}`, e.message);
+      elizaLogger.error(
+        `Error normalizing ${type}: ${item.name}`,
+        e.message
+      );
       return void 0;
     }
   }
   return item;
 }
-__name(getInstanceFromContainer, "getInstanceFromContainer");
 function createPlugin(ctx) {
   return async (opts) => {
     const plugin = {
@@ -68,24 +81,51 @@ function createPlugin(ctx) {
       description: opts.description
     };
     if (typeof opts.providers !== "undefined") {
-      plugin.providers = (await Promise.all(opts.providers.map((provider) => getInstanceFromContainer(ctx, provider, "provider")))).filter(Boolean);
+      plugin.providers = (await Promise.all(
+        opts.providers.map(
+          (provider) => getInstanceFromContainer(
+            ctx,
+            provider,
+            "provider"
+          )
+        )
+      )).filter(Boolean);
     }
     if (typeof opts.actions !== "undefined") {
-      plugin.actions = (await Promise.all(opts.actions.map((action) => getInstanceFromContainer(ctx, action, "action")))).filter(Boolean);
+      plugin.actions = (await Promise.all(
+        opts.actions.map(
+          (action) => getInstanceFromContainer(ctx, action, "action")
+        )
+      )).filter(Boolean);
     }
     if (typeof opts.evaluators !== "undefined") {
-      plugin.evaluators = (await Promise.all(opts.evaluators.map((evaluator) => getInstanceFromContainer(ctx, evaluator, "evaluator")))).filter(Boolean);
+      plugin.evaluators = (await Promise.all(
+        opts.evaluators.map(
+          (evaluator) => getInstanceFromContainer(
+            ctx,
+            evaluator,
+            "evaluator"
+          )
+        )
+      )).filter(Boolean);
     }
     if (typeof opts.services !== "undefined") {
-      plugin.services = await Promise.all(opts.services.map((service) => getInstanceFromContainer(ctx, service, "service")));
+      plugin.services = await Promise.all(
+        opts.services.map(
+          (service) => getInstanceFromContainer(ctx, service, "service")
+        )
+      );
     }
     if (typeof opts.clients !== "undefined") {
-      plugin.clients = await Promise.all(opts.clients.map((client) => getInstanceFromContainer(ctx, client, "client")));
+      plugin.clients = await Promise.all(
+        opts.clients.map(
+          (client) => getInstanceFromContainer(ctx, client, "client")
+        )
+      );
     }
     return plugin;
   };
 }
-__name(createPlugin, "createPlugin");
 
 // src/factories/charactor.ts
 import { elizaLogger as elizaLogger2 } from "@elizaos/core";
@@ -97,39 +137,47 @@ globalContainer.bind(FACTORIES.PluginFactory).toFactory(createPlugin);
 
 // src/factories/charactor.ts
 async function normalizeCharacter(character) {
-  const createPlugin2 = globalContainer.get(FACTORIES.PluginFactory);
-  const normalizePlugin = /* @__PURE__ */ __name(async (plugin) => {
+  const createPlugin2 = globalContainer.get(
+    FACTORIES.PluginFactory
+  );
+  const normalizePlugin = async (plugin) => {
     if (typeof plugin?.name === "string" && typeof plugin?.description === "string") {
       try {
         const normalized = await createPlugin2(plugin);
         elizaLogger2.info("Normalized plugin:", normalized.name);
         return normalized;
       } catch (e) {
-        elizaLogger2.error(`Error normalizing plugin: ${plugin.name}`, e.message);
+        elizaLogger2.error(
+          `Error normalizing plugin: ${plugin.name}`,
+          e.message
+        );
       }
     }
     return plugin;
-  }, "normalizePlugin");
+  };
   let plugins = [];
   if (character.plugins?.length > 0) {
-    const normalizedPlugins = await Promise.all(character.plugins.map(normalizePlugin));
-    const validPlugins = normalizedPlugins.filter((plugin) => plugin !== void 0);
+    const normalizedPlugins = await Promise.all(
+      character.plugins.map(normalizePlugin)
+    );
+    const validPlugins = normalizedPlugins.filter(
+      (plugin) => plugin !== void 0
+    );
     if (validPlugins.length !== character.plugins.length) {
-      elizaLogger2.warn(`Some plugins failed to normalize: ${character.plugins.length - validPlugins.length} failed`);
+      elizaLogger2.warn(
+        `Some plugins failed to normalize: ${character.plugins.length - validPlugins.length} failed`
+      );
     }
     plugins = validPlugins;
   }
-  return Object.assign({}, character, {
-    plugins
-  });
+  return Object.assign({}, character, { plugins });
 }
-__name(normalizeCharacter, "normalizeCharacter");
 
 // src/templates.ts
-import { z as z2 } from "zod";
-function buildContentOutputTemplate(actionName, actionDesc, properties, schema) {
+function buildContentOutputTemplate(actionName, actionDesc, properties) {
   let propDesc = "";
-  Object.entries(properties).forEach(([key, { description, examples }]) => {
+  const propEntries = Object.entries(properties);
+  for (const [key, { description, examples }] of propEntries) {
     propDesc += `- Field **"${key}"**: ${description}.`;
     if (examples?.length > 0) {
       propDesc += " Examples or Rules for this field:\n";
@@ -140,7 +188,7 @@ function buildContentOutputTemplate(actionName, actionDesc, properties, schema) 
       propDesc += `    ${index + 1}. ${example}
 `;
     });
-  });
+  }
   return `Perform the action: "${actionName}".
 Action description is "${actionDesc}".
 
@@ -150,80 +198,24 @@ ${propDesc}
 
 Use null for any values that cannot be determined.
 
-Respond with a JSON markdown block containing only the extracted values with this structure:
-
-\`\`\`json
-${zodSchemaToJson(schema)}
-\`\`\`
+### Context
 
 Here are the recent user messages for context:
 {{recentMessages}}
+
+Respond with a JSON containing only the extracted values.
 `;
 }
-__name(buildContentOutputTemplate, "buildContentOutputTemplate");
-function zodSchemaToJson(schema) {
-  if (schema instanceof z2.ZodObject) {
-    const shape = schema.shape;
-    const properties = Object.entries(shape).map(([key, value]) => {
-      return `"${key}": ${zodTypeToJson(value)}`;
-    });
-    return `{
-${properties.join(",\n")}
-}`;
-  }
-  return "";
-}
-__name(zodSchemaToJson, "zodSchemaToJson");
-function zodTypeToJson(schema) {
-  if (schema instanceof z2.ZodNullable || schema instanceof z2.ZodOptional) {
-    return `${zodTypeToJson(schema._def.innerType)} | null`;
-  }
-  if (schema instanceof z2.ZodUnion) {
-    return schema._def.options.map(zodTypeToJson).join(" | ");
-  }
-  if (schema instanceof z2.ZodString) {
-    return "string";
-  }
-  if (schema instanceof z2.ZodNumber) {
-    return "number";
-  }
-  if (schema instanceof z2.ZodBoolean) {
-    return "boolean";
-  }
-  if (schema instanceof z2.ZodArray) {
-    return `${zodTypeToJson(schema._def.type)}[]`;
-  }
-  if (schema instanceof z2.ZodObject) {
-    return zodSchemaToJson(schema);
-  }
-  return "any";
-}
-__name(zodTypeToJson, "zodTypeToJson");
 
 // src/actions/baseInjectableAction.ts
 import { injectable, unmanaged } from "inversify";
-import { composeContext, elizaLogger as elizaLogger3, generateObject, ModelClass } from "@elizaos/core";
-function _ts_decorate(decorators, target, key, desc) {
-  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-  return c > 3 && r && Object.defineProperty(target, key, r), r;
-}
-__name(_ts_decorate, "_ts_decorate");
-function _ts_metadata(k, v) {
-  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-}
-__name(_ts_metadata, "_ts_metadata");
-function _ts_param(paramIndex, decorator) {
-  return function(target, key) {
-    decorator(target, key, paramIndex);
-  };
-}
-__name(_ts_param, "_ts_param");
+import {
+  composeContext,
+  elizaLogger as elizaLogger3,
+  generateObject,
+  ModelClass
+} from "@elizaos/core";
 var BaseInjectableAction = class {
-  static {
-    __name(this, "BaseInjectableAction");
-  }
   // -------- Properties --------
   name;
   similes;
@@ -260,7 +252,7 @@ var BaseInjectableAction = class {
       }
       if (this.template === void 0) {
         const properties = loadPropertyDescriptions(this.contentClass);
-        this.template = buildContentOutputTemplate(this.name, this.description, properties, this.contentSchema);
+        this.template = buildContentOutputTemplate(this.name, this.description, properties);
       }
     }
   }
@@ -292,10 +284,7 @@ var BaseInjectableAction = class {
     } else {
       currentState = await runtime.updateRecentMessageState(currentState);
     }
-    return composeContext({
-      state: currentState,
-      template: this.template
-    });
+    return composeContext({ state: currentState, template: this.template });
   }
   /**
    * Default method for processing messages
@@ -321,7 +310,10 @@ var BaseInjectableAction = class {
     elizaLogger3.debug("Response: ", resourceDetails.object);
     const parsedObj = await this.contentSchema.safeParseAsync(resourceDetails.object);
     if (!parsedObj.success) {
-      elizaLogger3.error("Failed to parse content: ", JSON.stringify(parsedObj.error?.flatten()));
+      elizaLogger3.error(
+        "Failed to parse content: ",
+        JSON.stringify(parsedObj.error?.flatten())
+      );
       return null;
     }
     return parsedObj.data;
@@ -359,38 +351,14 @@ var BaseInjectableAction = class {
     }
   }
 };
-BaseInjectableAction = _ts_decorate([
+BaseInjectableAction = __decorateClass([
   injectable(),
-  _ts_param(0, unmanaged()),
-  _ts_metadata("design:type", Function),
-  _ts_metadata("design:paramtypes", [
-    typeof ActionOptions === "undefined" ? Object : ActionOptions
-  ])
+  __decorateParam(0, unmanaged())
 ], BaseInjectableAction);
 
 // src/evaluators/baseInjectableEvaluator.ts
 import { injectable as injectable2, unmanaged as unmanaged2 } from "inversify";
-function _ts_decorate2(decorators, target, key, desc) {
-  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-  return c > 3 && r && Object.defineProperty(target, key, r), r;
-}
-__name(_ts_decorate2, "_ts_decorate");
-function _ts_metadata2(k, v) {
-  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-}
-__name(_ts_metadata2, "_ts_metadata");
-function _ts_param2(paramIndex, decorator) {
-  return function(target, key) {
-    decorator(target, key, paramIndex);
-  };
-}
-__name(_ts_param2, "_ts_param");
 var BaseInjectableEvaluator = class {
-  static {
-    __name(this, "BaseInjectableEvaluator");
-  }
   // -------- Properties --------
   alwaysRun;
   name;
@@ -420,13 +388,9 @@ var BaseInjectableEvaluator = class {
     return true;
   }
 };
-BaseInjectableEvaluator = _ts_decorate2([
+BaseInjectableEvaluator = __decorateClass([
   injectable2(),
-  _ts_param2(0, unmanaged2()),
-  _ts_metadata2("design:type", Function),
-  _ts_metadata2("design:paramtypes", [
-    typeof EvaluatorOptions === "undefined" ? Object : EvaluatorOptions
-  ])
+  __decorateParam(0, unmanaged2())
 ], BaseInjectableEvaluator);
 export {
   BaseInjectableAction,
@@ -438,7 +402,6 @@ export {
   loadPropertyDescriptions,
   normalizeCharacter,
   property,
-  symbols_exports as symbols,
-  zodSchemaToJson
+  symbols_exports as symbols
 };
 //# sourceMappingURL=index.js.map

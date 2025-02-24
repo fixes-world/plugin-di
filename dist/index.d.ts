@@ -138,13 +138,7 @@ declare function normalizeCharacter(character: Character): Promise<Character>;
  * @param properties The properties of the content
  * @param schema The Zod schema of the content
  */
-declare function buildContentOutputTemplate(actionName: string, actionDesc: string, properties: Record<string, ContentPropertyDescription>, schema: z.ZodType<any>): string;
-/**
- * Convert a Zod schema to JSON
- * @param schema Zod schema
- * @returns JSON string
- */
-declare function zodSchemaToJson(schema: z.ZodType<any>): string;
+declare function buildContentOutputTemplate(actionName: string, actionDesc: string, properties: Record<string, ContentPropertyDescription>): string;
 
 declare const globalContainer: Container;
 
@@ -250,4 +244,4 @@ declare abstract class BaseInjectableEvaluator implements InjectableEvaluator {
     abstract handler(runtime: IAgentRuntime, message: Memory, state?: State, options?: Record<string, unknown>, callback?: HandlerCallback): Promise<unknown>;
 }
 
-export { type ActionOptions, BaseInjectableAction, BaseInjectableEvaluator, type ContentClass, type ContentPropertyDescription, type EvaluatorOptions, type InjectableAction, type InjectableActionClass, type InjectableClientClass, type InjectableEvaluator, type InjectableEvaluatorClass, type InjectableObjectClass, type InjectableProvider, type InjectableProviderClass, type InjectableServiceClass, type PluginFactory, type PluginOptions, buildContentOutputTemplate, createPlugin, createZodSchema, globalContainer, loadPropertyDescriptions, normalizeCharacter, property, symbols, zodSchemaToJson };
+export { type ActionOptions, BaseInjectableAction, BaseInjectableEvaluator, type ContentClass, type ContentPropertyDescription, type EvaluatorOptions, type InjectableAction, type InjectableActionClass, type InjectableClientClass, type InjectableEvaluator, type InjectableEvaluatorClass, type InjectableObjectClass, type InjectableProvider, type InjectableProviderClass, type InjectableServiceClass, type PluginFactory, type PluginOptions, buildContentOutputTemplate, createPlugin, createZodSchema, globalContainer, loadPropertyDescriptions, normalizeCharacter, property, symbols };
