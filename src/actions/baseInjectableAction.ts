@@ -11,11 +11,7 @@ import {
     ModelClass,
     type State,
 } from "@elizaos/core";
-import {
-    type ContentClass,
-    createZodSchema,
-    loadPropertyDescriptions,
-} from "../decorators";
+import { type ContentClass, createZodSchema, loadPropertyDescriptions } from "../decorators";
 import type { ActionOptions, InjectableAction } from "../types";
 import { buildContentOutputTemplate } from "../templates";
 
@@ -67,12 +63,7 @@ export abstract class BaseInjectableAction<T> implements InjectableAction<T> {
             }
             if (this.template === undefined) {
                 const properties = loadPropertyDescriptions(this.contentClass);
-                this.template = buildContentOutputTemplate(
-                    this.name,
-                    this.description,
-                    properties,
-                    this.contentSchema
-                );
+                this.template = buildContentOutputTemplate(this.name, this.description, properties);
             }
         }
     }
@@ -89,7 +80,7 @@ export abstract class BaseInjectableAction<T> implements InjectableAction<T> {
         runtime: IAgentRuntime,
         message: Memory,
         state?: State,
-        callback?: HandlerCallback
+        callback?: HandlerCallback,
     ): Promise<unknown | null>;
 
     // -------- Implemented methods for Eliza runtime --------
@@ -103,11 +94,7 @@ export abstract class BaseInjectableAction<T> implements InjectableAction<T> {
      * @param state The state object from Eliza framework
      * @returns The validation result
      */
-    async validate(
-        _runtime: IAgentRuntime,
-        _message: Memory,
-        _state?: State
-    ): Promise<boolean> {
+    async validate(_runtime: IAgentRuntime, _message: Memory, _state?: State): Promise<boolean> {
         // Default implementation is to return true
         return true;
     }
@@ -123,7 +110,7 @@ export abstract class BaseInjectableAction<T> implements InjectableAction<T> {
     protected async prepareActionContext(
         runtime: IAgentRuntime,
         message: Memory,
-        state?: State
+        state?: State,
     ): Promise<string> {
         // Initialize or update state
         let currentState = state;
@@ -149,13 +136,9 @@ export abstract class BaseInjectableAction<T> implements InjectableAction<T> {
     protected async processMessages(
         runtime: IAgentRuntime,
         message: Memory,
-        state: State
+        state: State,
     ): Promise<T | null> {
-        const actionContext = await this.prepareActionContext(
-            runtime,
-            message,
-            state
-        );
+        const actionContext = await this.prepareActionContext(runtime, message, state);
 
         if (!actionContext) {
             elizaLogger.error("Failed to prepare action context");
@@ -173,13 +156,11 @@ export abstract class BaseInjectableAction<T> implements InjectableAction<T> {
         elizaLogger.debug("Response: ", resourceDetails.object);
 
         // Validate content
-        const parsedObj = await this.contentSchema.safeParseAsync(
-            resourceDetails.object
-        );
+        const parsedObj = await this.contentSchema.safeParseAsync(resourceDetails.object);
         if (!parsedObj.success) {
             elizaLogger.error(
                 "Failed to parse content: ",
-                JSON.stringify(parsedObj.error?.flatten())
+                JSON.stringify(parsedObj.error?.flatten()),
             );
             return null;
         }
@@ -201,7 +182,7 @@ export abstract class BaseInjectableAction<T> implements InjectableAction<T> {
         message: Memory,
         state?: State,
         _options?: Record<string, unknown>,
-        callback?: HandlerCallback
+        callback?: HandlerCallback,
     ): Promise<unknown | null> {
         let content: T;
         try {
@@ -221,13 +202,7 @@ export abstract class BaseInjectableAction<T> implements InjectableAction<T> {
         }
 
         try {
-            return await this.execute(
-                content,
-                runtime,
-                message,
-                state,
-                callback
-            );
+            return await this.execute(content, runtime, message, state, callback);
         } catch (err) {
             elizaLogger.error("Error in executing action:", err.message);
         }

@@ -19,7 +19,7 @@
         "dist"
     ],
     "dependencies": {
-        "@elizaos/core": "workspace:*",
+        "@elizaos/core": "0.25.8",
         "inversify": "^6.2.1",
         "reflect-metadata": "^0.2.2",
         "uuid": "11.0.3",
