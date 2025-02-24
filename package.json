@@ -41,5 +41,9 @@
         "format": "biome format .",
         "format:fix": "biome format --write .",
         "test": "vitest run"
+    },
+    "agentConfig": {
+        "pluginType": "elizaos:client:1.0.0",
+        "pluginParameters": {}
     }
 }
