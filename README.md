@@ -46,7 +46,7 @@ class SampleClass {
 Remember to register the class with the container before injecting it into other classes.
 
 ```typescript
-import { globalContainer } from "@elizaos/plugin-di";
+import { globalContainer } from "@elizaos-plugins/plugin-di";
 
 // Register the class with the container as a singleton, this means that the class will be instantiated only once.
 globalContainer.bind(SingletonClass).toSelf().inSingletonScope();
@@ -85,7 +85,7 @@ This decorator is used to define a property in an action content class  which wi
 
 ```typescript
 import { z } from 'zod';
-import { property } from "@elizaos/plugin-di";
+import { property } from "@elizaos-plugins/plugin-di";
 
 class SampleActionContent {
   @property({
@@ -113,7 +113,7 @@ What you need to implement is the `execute` method.
 
 ```typescript
 import { injectable } from "inversify";
-import { BaseInjectableAction } from "@elizaos/plugin-di";
+import { BaseInjectableAction } from "@elizaos-plugins/plugin-di";
 
 class SampleActionContent {
     @property({
