@@ -19,7 +19,6 @@
         "dist"
     ],
     "dependencies": {
-        "@elizaos/core": "0.25.8",
         "inversify": "^6.2.1",
         "reflect-metadata": "^0.2.2",
         "uuid": "11.0.3",
@@ -31,6 +30,9 @@
         "@types/uuid": "10.0.0",
         "tsup": "8.3.5",
         "vitest": "2.1.9"
+    },
+    "peerDependencies": {
+        "@elizaos/core": "0.25.8"
     },
     "scripts": {
         "build": "tsup --format esm --dts",
