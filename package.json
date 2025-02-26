@@ -21,8 +21,7 @@
     "dependencies": {
         "inversify": "^6.2.1",
         "reflect-metadata": "^0.2.2",
-        "uuid": "11.0.3",
-        "zod": "3.23.8"
+        "uuid": "11.0.3"
     },
     "devDependencies": {
         "@biomejs/biome": "1.9.4",
@@ -32,7 +31,8 @@
         "vitest": "2.1.9"
     },
     "peerDependencies": {
-        "@elizaos/core": "0.25.8"
+        "@elizaos/core": "0.25.8",
+        "zod": "3.24.1"
     },
     "scripts": {
         "build": "tsup --format esm --dts",
