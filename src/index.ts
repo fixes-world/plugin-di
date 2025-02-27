@@ -7,3 +7,7 @@ export * from "./templates";
 export * from "./di";
 export * from "./actions";
 export * from "./evaluators";
+
+import { diPlugin } from "./plugin";
+
+export default diPlugin;
