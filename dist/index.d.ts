@@ -244,4 +244,10 @@ declare abstract class BaseInjectableEvaluator implements InjectableEvaluator {
     abstract handler(runtime: IAgentRuntime, message: Memory, state?: State, options?: Record<string, unknown>, callback?: HandlerCallback): Promise<unknown>;
 }
 
-export { type ActionOptions, BaseInjectableAction, BaseInjectableEvaluator, type ContentClass, type ContentPropertyDescription, type EvaluatorOptions, type InjectableAction, type InjectableActionClass, type InjectableClientClass, type InjectableEvaluator, type InjectableEvaluatorClass, type InjectableObjectClass, type InjectableProvider, type InjectableProviderClass, type InjectableServiceClass, type PluginFactory, type PluginOptions, buildContentOutputTemplate, createPlugin, createZodSchema, globalContainer, loadPropertyDescriptions, normalizeCharacter, property, symbols };
+/**
+ * Dependency Injection Plugin configuration
+ * Required for the plugin to be loaded, will be exported as default
+ */
+declare const diPlugin: Plugin;
+
+export { type ActionOptions, BaseInjectableAction, BaseInjectableEvaluator, type ContentClass, type ContentPropertyDescription, type EvaluatorOptions, type InjectableAction, type InjectableActionClass, type InjectableClientClass, type InjectableEvaluator, type InjectableEvaluatorClass, type InjectableObjectClass, type InjectableProvider, type InjectableProviderClass, type InjectableServiceClass, type PluginFactory, type PluginOptions, buildContentOutputTemplate, createPlugin, createZodSchema, diPlugin as default, globalContainer, loadPropertyDescriptions, normalizeCharacter, property, symbols };

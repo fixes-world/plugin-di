@@ -388,12 +388,24 @@ BaseInjectableEvaluator = _ts_decorate2([
     typeof EvaluatorOptions === "undefined" ? Object : EvaluatorOptions
   ])
 ], BaseInjectableEvaluator);
+
+// src/plugin.ts
+var diPlugin = {
+  name: "dependency-injection",
+  description: "Dependency Injection Plugin for Eliza.",
+  // handle character loaded
+  handlePostCharacterLoaded: normalizeCharacter
+};
+
+// src/index.ts
+var index_default = diPlugin;
 export {
   BaseInjectableAction,
   BaseInjectableEvaluator,
   buildContentOutputTemplate,
   createPlugin,
   createZodSchema,
+  index_default as default,
   globalContainer,
   loadPropertyDescriptions,
   normalizeCharacter,
